@@ -53,20 +53,23 @@ export function useLiquidityStaking() {
   });
 
   // Transaction Handler
-  const executeTransaction = async (functionName: string, args = []) => {
-    try {
-      const tx = await writeContractAsync({
-        address: LIQUIDITY_STAKING_ADDRESS,
-        abi: LIQUIDITY_STAKING_ADDRESS_ABI,
-        functionName,
-        args,
-      });
-      return { success: true, message: `${functionName} executed successfully`, data: tx };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return { success: false, message: error?.message || `Failed to execute ${functionName}` };
-    }
-  };
+// Transaction Handler
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const executeTransaction = async (functionName: string, args: any[] = []) => {
+  try {
+    const tx = await writeContractAsync({
+      address: LIQUIDITY_STAKING_ADDRESS,
+      abi: LIQUIDITY_STAKING_ADDRESS_ABI,
+      functionName,
+      args,
+    });
+    return { success: true, message: `${functionName} executed successfully`, data: tx };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return { success: false, message: error?.message || `Failed to execute ${functionName}` };
+  }
+};
+
 
   // Staking Functions
   const stake = async (amount: number) => {
@@ -74,6 +77,8 @@ export function useLiquidityStaking() {
     if (response.success) stakeAmountQuery.refetch();
     return response;
   };
+
+  
 
   const unstake = async (amount: number) => {
     const response = await executeTransaction("unstake", [amount]);

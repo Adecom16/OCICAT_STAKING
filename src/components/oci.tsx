@@ -9,7 +9,7 @@ const StakingInterface = () => {
   const [rate, setRate] = useState<number>(0);
   const [period, setPeriod] = useState<number>(0);
   const [fee, setFee] = useState<number>(0);
-  const [userAddress, setUserAddress] = useState<`0x${string}`>("0x");
+  const [userAddress] = useState<`0x${string}`>("0x");
   const [power, setPower] = useState<number>(0);
   const [cooldownTime, setCooldownTime] = useState<number | null>(null);
 
@@ -111,7 +111,7 @@ const StakingInterface = () => {
         {/* Staking Actions */}
         <div className="space-y-4">
           <input
-            type="number"
+            type="text"
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
             className="bg-gray-700 border border-gray-600 p-2 rounded w-full"

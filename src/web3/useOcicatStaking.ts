@@ -47,6 +47,7 @@ export function useOcicatStaking() {
   });
 
   // Generic Transaction Handler
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const executeTransaction = async (functionName: string, args: any[] = []) => {
     try {
       const tx = await writeContractAsync({
@@ -56,6 +57,7 @@ export function useOcicatStaking() {
         args,
       });
       return { success: true, message: `${functionName} executed successfully`, data: tx };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return { success: false, message: error?.message || `Failed to execute ${functionName}` };
     }
