@@ -1,0 +1,287 @@
+// import { useAccount, useWriteContract, useReadContract, useWaitForTransactionReceipt } from "wagmi";
+// import { CONSTANTS } from "./config/constants";
+// import ocicatStakingAbi from "./config/abi.json"; // Replace with the actual ABI for OcicatStaking
+
+// const OCICAT_STAKING_CONTRACT_ADDRESS = CONSTANTS.OCICAT_STAKING_CONTRACT_ADDRESS as `0x${string}`;
+// const OCICAT_STAKING_CONTRACT_ABI = ocicatStakingAbi;
+
+// export function useOcicatStaking() {
+//   const { address, isConnected } = useAccount();
+//   const { data: stakeHash, writeContractAsync: writeStakeContract } = useWriteContract();
+//   const { data: unstakeHash, writeContractAsync: writeUnstakeContract } = useWriteContract();
+//   const { data: emergencyUnstakeHash, writeContractAsync: writeEmergencyUnstakeContract } = useWriteContract();
+//   const { data: claimRewardsHash, writeContractAsync: writeClaimRewardsContract } = useWriteContract();
+//   const { data: withdrawHash, writeContractAsync: writeWithdrawContract } = useWriteContract();
+//   const { data: setRewardRateHash, writeContractAsync: writeSetRewardRateContract } = useWriteContract();
+//   const { data: setCoolDownPeriodHash, writeContractAsync: writeSetCoolDownPeriodContract } = useWriteContract();
+//   const { data: setEmergencyUnstakeFeeHash, writeContractAsync: writeSetEmergencyUnstakeFeeContract } = useWriteContract();
+//   const { data: assignDaoPowerHash, writeContractAsync: writeAssignDaoPowerContract } = useWriteContract();
+
+//   // Read stake amount
+//   const { data: stakeAmount } = useReadContract({
+//     address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//     abi: OCICAT_STAKING_CONTRACT_ABI,
+//     functionName: "getUserStake",
+//     args: [address],
+//     query: {
+//       enabled: !!address,
+//     },
+//   });
+
+//   // Read DAO power
+//   const { data: daoPower } = useReadContract({
+//     address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//     abi: OCICAT_STAKING_CONTRACT_ABI,
+//     functionName: "getUserDaoPower",
+//     args: [address],
+//     query: {
+//       enabled: !!address,
+//     },
+//   });
+
+//   // Read cool-down period (in seconds)
+//   const { data: coolDownPeriodSeconds } = useReadContract({
+//     address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//     abi: OCICAT_STAKING_CONTRACT_ABI,
+//     functionName: "coolDownPeriod",
+//   });
+
+//   // Convert cool-down period to days
+//   const coolDownPeriod = coolDownPeriodSeconds ? Number(coolDownPeriodSeconds) / (60 * 60 * 24) : 0;
+
+//   // Read reward rate
+//   const { data: rewardRate } = useReadContract({
+//     address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//     abi: OCICAT_STAKING_CONTRACT_ABI,
+//     functionName: "rewardRate",
+//   });
+
+//   // Read emergency unstake fee
+//   const { data: emergencyUnstakeFee } = useReadContract({
+//     address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//     abi: OCICAT_STAKING_CONTRACT_ABI,
+//     functionName: "emergencyUnstakeFee",
+//   });
+
+//   // Stake function
+//   const { data: stakeReceiptData, isLoading: isStaking } = useWaitForTransactionReceipt({
+//     hash: stakeHash,
+//   });
+
+//   // Unstake function
+//   const { data: unstakeReceiptData, isLoading: isUnstaking } = useWaitForTransactionReceipt({
+//     hash: unstakeHash,
+//   });
+
+//   // Emergency unstake function
+//   const { data: emergencyUnstakeReceiptData, isLoading: isEmergencyUnstaking } = useWaitForTransactionReceipt({
+//     hash: emergencyUnstakeHash,
+//   });
+
+//   // Claim rewards function
+//   const { data: claimRewardsReceiptData, isLoading: isClaimingRewards } = useWaitForTransactionReceipt({
+//     hash: claimRewardsHash,
+//   });
+
+//   // Withdraw after cool-down function
+//   const { data: withdrawReceiptData, isLoading: isWithdrawing } = useWaitForTransactionReceipt({
+//     hash: withdrawHash,
+//   });
+
+//   // Set reward rate function
+//   const { data: setRewardRateReceiptData, isLoading: isSettingRewardRate } = useWaitForTransactionReceipt({
+//     hash: setRewardRateHash,
+//   });
+
+//   // Set cool-down period function
+//   const { data: setCoolDownPeriodReceiptData, isLoading: isSettingCoolDownPeriod } = useWaitForTransactionReceipt({
+//     hash: setCoolDownPeriodHash,
+//   });
+
+//   // Set emergency unstake fee function
+//   const { data: setEmergencyUnstakeFeeReceiptData, isLoading: isSettingEmergencyUnstakeFee } = useWaitForTransactionReceipt({
+//     hash: setEmergencyUnstakeFeeHash,
+//   });
+
+//   // Assign DAO power function
+//   const { data: assignDaoPowerReceiptData, isLoading: isAssigningDaoPower } = useWaitForTransactionReceipt({
+//     hash: assignDaoPowerHash,
+//   });
+
+//   // Stake tokens
+//   const stake = async (amount: bigint) => {
+//     try {
+//       const hash = await writeStakeContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "stake",
+//         args: [amount],
+//       });
+//       console.log("Stake transaction hash:", hash);
+//       return hash;
+//     } catch (error) {
+//       console.error("Error staking:", error);
+//       throw error;
+//     }
+//   };
+
+//   // Unstake tokens
+//   const unstake = async () => {
+//     try {
+//       const hash = await writeUnstakeContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "unstake",
+//       });
+//       return hash;
+//     } catch (error) {
+//       console.error("Error unstaking:", error);
+//       throw error;
+//     }
+//   };
+
+//   // Emergency unstake tokens
+//   const emergencyUnstake = async () => {
+//     try {
+//       const hash = await writeEmergencyUnstakeContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "emergencyUnstake",
+//       });
+//       return hash;
+//     } catch (error) {
+//       console.error("Error emergency unstaking:", error);
+//       throw error;
+//     }
+//   };
+
+//   // Claim rewards
+//   const claimRewards = async () => {
+//     try {
+//       const hash = await writeClaimRewardsContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "claimRewards",
+//       });
+//       return hash;
+//     } catch (error) {
+//       console.error("Error claiming rewards:", error);
+//       throw error;
+//     }
+//   };
+
+//   // Withdraw after cool-down
+//   const withdrawAfterCooldown = async () => {
+//     try {
+//       const hash = await writeWithdrawContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "withdrawAfterCooldown",
+//       });
+//       return hash;
+//     } catch (error) {
+//       console.error("Error withdrawing after cooldown:", error);
+//       throw error;
+//     }
+//   };
+
+//   // Set reward rate (only owner)
+//   const setRewardRate = async (rate: bigint) => {
+//     try {
+//       const hash = await writeSetRewardRateContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "setRewardRate",
+//         args: [rate],
+//       });
+//       return hash;
+//     } catch (error) {
+//       console.error("Error setting reward rate:", error);
+//       throw error;
+//     }
+//   };
+
+//   // Set cool-down period (only owner)
+//   const setCoolDownPeriod = async (period: bigint) => {
+//     try {
+//       const hash = await writeSetCoolDownPeriodContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "setCoolDownPeriod",
+//         args: [period],
+//       });
+//       return hash;
+//     } catch (error) {
+//       console.error("Error setting cool-down period:", error);
+//       throw error;
+//     }
+//   };
+
+//   // Set emergency unstake fee (only owner)
+//   const setEmergencyUnstakeFee = async (fee: bigint) => {
+//     try {
+//       const hash = await writeSetEmergencyUnstakeFeeContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "setEmergencyUnstakeFee",
+//         args: [fee],
+//       });
+//       return hash;
+//     } catch (error) {
+//       console.error("Error setting emergency unstake fee:", error);
+//       throw error;
+//     }
+//   };
+
+//   // Assign DAO power (only owner)
+//   const assignDaoPower = async (user: `0x${string}`, power: bigint) => {
+//     try {
+//       const hash = await writeAssignDaoPowerContract({
+//         address: OCICAT_STAKING_CONTRACT_ADDRESS,
+//         abi: OCICAT_STAKING_CONTRACT_ABI,
+//         functionName: "assignDaoPower",
+//         args: [user, power],
+//       });
+//       return hash;
+//     } catch (error) {
+//       console.error("Error assigning DAO power:", error);
+//       throw error;
+//     }
+//   };
+
+//   return {
+//     stakeAmount,
+//     daoPower,
+//     coolDownPeriod,
+//     rewardRate,
+//     emergencyUnstakeFee,
+//     isConnected,
+//     isStaking,
+//     isUnstaking,
+//     isEmergencyUnstaking,
+//     isClaimingRewards,
+//     isWithdrawing,
+//     isSettingRewardRate,
+//     isSettingCoolDownPeriod,
+//     isSettingEmergencyUnstakeFee,
+//     isAssigningDaoPower,
+//     stake,
+//     unstake,
+//     emergencyUnstake,
+//     claimRewards,
+//     withdrawAfterCooldown,
+//     setRewardRate,
+//     setCoolDownPeriod,
+//     setEmergencyUnstakeFee,
+//     assignDaoPower,
+//     stakeReceiptData,
+//     unstakeReceiptData,
+//     emergencyUnstakeReceiptData,
+//     claimRewardsReceiptData,
+//     withdrawReceiptData,
+//     setRewardRateReceiptData,
+//     setCoolDownPeriodReceiptData,
+//     setEmergencyUnstakeFeeReceiptData,
+//     assignDaoPowerReceiptData,
+//   };
+// }
