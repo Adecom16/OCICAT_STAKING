@@ -25,7 +25,9 @@ const StakingInterface = () => {
     }
   }, [cooldownTime]);
 
-  const handleUnstake = async (unstakeFunction: (amount: number) => Promise<any>) => {
+  const handleUnstake = async (
+    unstakeFunction: (amount: number) => Promise<any>
+  ) => {
     const response = await unstakeFunction(amount);
     if (response.success) {
       // Safely convert cooldown period to a number
@@ -99,8 +101,11 @@ const StakingInterface = () => {
           <p>Staked Amount: {ocicatStaking.stakeAmount?.toString()}</p>
           <p>DAO Power: {ocicatStaking.daoPower?.toString()}</p>
           <p>Reward Rate: {ocicatStaking.rewardRate?.toString()}</p>
-          <p>Cooldown Period: {ocicatStaking.coolDownPeriod?.toString()}</p>
-          <p>Emergency Unstake Fee: {ocicatStaking.emergencyUnstakeFee?.toString()}</p>
+          <p>Cooldown Period: {ocicatStaking.coolDownPeriod?.toString()} days</p>
+          <p>
+            Emergency Unstake Fee:{" "}
+            {ocicatStaking.emergencyUnstakeFee?.toString()}
+          </p>
         </div>
       </div>
 
@@ -161,12 +166,25 @@ const StakingInterface = () => {
 
         {/* Display Data */}
         <div className="mt-6 space-y-2">
-          <p>Staked Amount: {liquidityStaking.stakeAmountQuery.data?.toString()}</p>
+          <p>
+            Staked Amount: {liquidityStaking.stakeAmountQuery.data?.toString()}
+          </p>
           <p>DAO Power: {liquidityStaking.daoPowerQuery.data?.toString()}</p>
-          <p>Pending Rewards: {liquidityStaking.pendingRewardsQuery.data?.toString()}</p>
-          <p>Reward Rate: {liquidityStaking.rewardRateQuery.data?.toString()}</p>
-          <p>Cooldown Period: {liquidityStaking.coolDownPeriodQuery.data?.toString()}</p>
-          <p>Emergency Unstake Fee: {liquidityStaking.emergencyUnstakeFeeQuery.data?.toString()}</p>
+          <p>
+            Pending Rewards:{" "}
+            {liquidityStaking.pendingRewardsQuery.data?.toString()}
+          </p>
+          <p>
+            Reward Rate: {liquidityStaking.rewardRateQuery.data?.toString()}
+          </p>
+          <p>
+            Cooldown Period:{" "}
+            {liquidityStaking.coolDownPeriodQuery.data?.toString()} days
+          </p>
+          <p>
+            Emergency Unstake Fee:{" "}
+            {liquidityStaking.emergencyUnstakeFeeQuery.data?.toString()}
+          </p>
         </div>
       </div>
     </div>
