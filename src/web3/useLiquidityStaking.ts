@@ -62,7 +62,8 @@ export function useLiquidityStaking() {
         args,
       });
       return { success: true, message: `${functionName} executed successfully`, data: tx };
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       return { success: false, message: error?.message || `Failed to execute ${functionName}` };
     }
   };
