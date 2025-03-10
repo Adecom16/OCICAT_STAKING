@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <Connect />
       <div className="bg-black text-white pt-20">
-        <StakingInterface/>
+        {/* <StakingInterface/> */}
         {/* <StakingInterface/> */}
         <Voting />
       </div>

@@ -1,5 +1,15 @@
+"use client"; // Add this directive at the top of the file
+
 import React from "react";
+import { useOcicatStaking } from "../web3/useOcicatStaking"; // Adjust the import path as necessary
+import { useTokenBalance } from "../web3/useTokenBalance"; // Adjust the import path as necessary
+import { useAccount } from "wagmi";
+
 const Connect = () => {
+  const { address } = useAccount(); // Get the connected wallet address
+  const { stakeAmount } = useOcicatStaking(); // Get the staked amount
+  const tokenBalance = useTokenBalance(address || ""); // Get the token balance for the connected wallet
+
   return (
     <>
       <div className="bg-[#0c0c0c] bg-cover bg-no-repeat w-full overflow-hidden transition-all relative">
@@ -22,7 +32,7 @@ const Connect = () => {
                     Total Staked
                   </p>
                   <span className="text-base font-semibold text-white px-5 py-[11px]">
-                    0.0000000000000000
+                    {stakeAmount ? stakeAmount.toString() : "0.0000000000000000"}
                   </span>
                 </div>
               </div>
@@ -32,7 +42,7 @@ const Connect = () => {
                     Total Supply
                   </p>
                   <span className="text-base font-semibold text-white px-5 py-[11px]">
-                    0.0000000000000000
+                    {tokenBalance || "0.0000000000000000"}
                   </span>
                 </div>
               </div>
