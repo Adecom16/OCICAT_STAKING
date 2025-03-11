@@ -72,7 +72,14 @@ export function useOcicatStaking() {
 
   const unstake = async (amount: number) => {
     const response = await executeTransaction("unstake", [amount]);
-    if (response.success) stakeAmountQuery.refetch();
+    if (response.success) {
+      stakeAmountQuery.refetch()
+
+         // Set cooldown end time
+         const cooldownPeriod = Number(coolDownPeriodQuery.data);
+         const cooldownEndTime = Date.now() + cooldownPeriod * 1000; // Convert to milliseconds
+         return { ...response, cooldownEndTime };
+    };
     return response;
   };
 

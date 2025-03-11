@@ -14,12 +14,13 @@ import { convertFromFloat } from "@/lib/utils";
 import { useLiquidityStaking } from "../web3/useLiquidityStaking";
 import { useOcicatStaking } from "../web3/useOcicatStaking";
 
-// token contract addresses and abis
+// Token contract addresses and ABIs
 const TOKEN_ABI = tokenabi;
 const OCICAT_TOKEN_ADDRESS = CONSTANTS.OCICAT_TOKEN_ADDRESS as `0x${string}`;
 const OCICAT_SPENDER = CONSTANTS.OCICAT_STAKING_CONTRACT_ADDRESS as `0x${string}`;
 const BNBLIQ_SPENDER = CONSTANTS.LIQUIDITY_STAKING_ADDRESS as `0x${string}`;
 
+// TextSwitch Component
 const TextSwitch = ({
   options,
   active,
@@ -46,11 +47,8 @@ const TextSwitch = ({
   </div>
 );
 
-const StakingContent = ({
-  coinType,
-}: {
-  coinType: string;
-}) => {
+// StakingContent Component
+const StakingContent = ({ coinType }: { coinType: string }) => {
   const [stakeAction, setStakeAction] = useState("Stake");
   const { isConnected, address } = useAccount();
   const tokenBalance = useTokenBalance(address!);
@@ -60,8 +58,8 @@ const StakingContent = ({
   const [cooldownEndTime, setCooldownEndTime] = useState<number | null>(null);
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
-  const { stakeAmount, stake, unstake, claimRewards } = useOcicatStaking();
-  const { stakeAmountQuery, stake: stakeLiquidity, unstake: unstakeLiquidity, claimRewards: claimRewardsLiquidity } = useLiquidityStaking();
+  const { stakeAmount, stake, unstake, claimRewards, coolDownPeriod } = useOcicatStaking();
+  const { stakeAmountQuery, stake: stakeLiquidity, unstake: unstakeLiquidity, claimRewards: claimRewardsLiquidity, coolDownPeriodQuery: coolDownPeriodLiquidity } = useLiquidityStaking();
 
   const { allowance, max_allowance, writeApprovalContract } =
     useApprovalContract(address!, (coinType === 'OCICAT' ? OCICAT_SPENDER : BNBLIQ_SPENDER));
@@ -75,10 +73,8 @@ const StakingContent = ({
     setLoading(true);
     try {
       if (coinType === 'OCICAT') {
-        // No x6 multiplier for OCICAT staking
         await stake(Number(number));
       } else {
-        // Apply x6 multiplier for liquidity staking
         await stakeLiquidity(convertFromFloat(Number(number), 6));
       }
     } catch (error) {
@@ -93,14 +89,15 @@ const StakingContent = ({
     setLoading(true);
     try {
       if (coinType === 'OCICAT') {
-        // No x6 multiplier for OCICAT unstaking
-        await unstake(Number(number));
+        const response = await unstake(Number(number));
+        if (response.success && coolDownPeriod) {
+          setCooldownEndTime(Date.now() + Number(coolDownPeriod) * 1000);
+        }
       } else {
-        // Apply x6 multiplier for liquidity unstaking
-        await unstakeLiquidity(convertFromFloat(Number(number), 6));
-        // Set cooldown for liquidity staking
-        // const cooldownPeriod = await coolDownPeriodLiquidity();
-        // setCooldownEndTime(Date.now() + cooldownPeriod * 1000);
+        const response = await unstakeLiquidity(convertFromFloat(Number(number), 6));
+        if (response.success && coolDownPeriodLiquidity) {
+          setCooldownEndTime(Date.now() + Number(coolDownPeriodLiquidity) * 1000);
+        }
       }
     } catch (error) {
       console.error("Unstaking failed:", error);
@@ -132,6 +129,7 @@ const StakingContent = ({
     }
   };
 
+  // Update remaining cooldown time every second
   useEffect(() => {
     if (cooldownEndTime) {
       const interval = setInterval(() => {
@@ -170,7 +168,9 @@ const StakingContent = ({
         <div className="flex flex-col items-center space-y-4">
           <span className="text-lg">Your Rewards:</span>
           <span className="text-2xl font-bold">
-            {coinType === 'OCICAT' ? stakeAmount : stakeAmountQuery.data} {coinType}
+            {coinType === 'OCICAT'
+              ? typeof stakeAmount === 'number' ? stakeAmount : 0
+              : typeof stakeAmountQuery.data === 'number' ? stakeAmountQuery.data : 0} {coinType}
           </span>
           <Button
             className="w-full bg-red-700 hover:bg-red-800"
@@ -214,12 +214,12 @@ const StakingContent = ({
 
       {isConnected ? (
         <>
-          {(!isNaN(allowance) && allowance !== 0) ? (
+          {(!isNaN(allowance) && allowance !== 0 ? (
             <Button
               className={`w-full bg-red-700 ${
                 stakeAction === "Stake"
-                  ? " hover:bg-red-700"
-                  : " hover:bg-red-700"
+                  ? "hover:bg-red-700"
+                  : "hover:bg-red-700"
               }`}
               size="lg"
               onClick={stakeAction === "Stake" ? handleStake : handleUnstake}
@@ -231,8 +231,8 @@ const StakingContent = ({
             <Button
               className={`w-full bg-red-700 ${
                 stakeAction === "Stake"
-                  ? " hover:bg-red-700"
-                  : " hover:bg-red-700"
+                  ? "hover:bg-red-700"
+                  : "hover:bg-red-700"
               }`}
               size="lg"
               onClick={async () => {
@@ -247,7 +247,7 @@ const StakingContent = ({
             >
               Approve
             </Button>
-          )}
+          ))}
           {stakeAction === "Unstake" && (
             <div className="text-center text-sm text-gray-400">
               {remainingTime !== null ? `Cooldown: ${formatTime(remainingTime)}` : "No unstaking in progress"}
@@ -261,6 +261,7 @@ const StakingContent = ({
   );
 };
 
+// Voting Component
 const Voting = () => {
   const [activeTab, setActiveTab] = useState("coinA");
 
@@ -269,8 +270,8 @@ const Voting = () => {
       <CardHeader>
         <Tabs
           defaultValue="coinA"
-          className="w-full "
-          onValueChange={setActiveTab}
+          className="w-full"
+          onValueChange={(value) => setActiveTab(value)}
         >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger
