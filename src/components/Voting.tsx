@@ -60,8 +60,8 @@ const StakingContent = ({
   const [cooldownEndTime, setCooldownEndTime] = useState<number | null>(null);
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
-  const { stakeAmount, stake, unstake, claimRewards, coolDownPeriod } = useOcicatStaking();
-  const { stakeAmountQuery, stake: stakeLiquidity, unstake: unstakeLiquidity, claimRewards: claimRewardsLiquidity, coolDownPeriod: coolDownPeriodLiquidity } = useLiquidityStaking();
+  const { stakeAmount, stake, unstake, claimRewards } = useOcicatStaking();
+  const { stakeAmountQuery, stake: stakeLiquidity, unstake: unstakeLiquidity, claimRewards: claimRewardsLiquidity } = useLiquidityStaking();
 
   const { allowance, max_allowance, writeApprovalContract } =
     useApprovalContract(address!, (coinType === 'OCICAT' ? OCICAT_SPENDER : BNBLIQ_SPENDER));
@@ -99,8 +99,8 @@ const StakingContent = ({
         // Apply x6 multiplier for liquidity unstaking
         await unstakeLiquidity(convertFromFloat(Number(number), 6));
         // Set cooldown for liquidity staking
-        const cooldownPeriod = await coolDownPeriodLiquidity();
-        setCooldownEndTime(Date.now() + cooldownPeriod * 1000);
+        // const cooldownPeriod = await coolDownPeriodLiquidity();
+        // setCooldownEndTime(Date.now() + cooldownPeriod * 1000);
       }
     } catch (error) {
       console.error("Unstaking failed:", error);
